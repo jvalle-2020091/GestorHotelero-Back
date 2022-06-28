@@ -128,3 +128,15 @@ exports.validExtension = async (ext, filePath)=>{
         return err;
     }
 }
+
+//---------------------------- Rooms -------------------------------------------------------------------
+
+
+exports.checkUpdateRoom = async(room)=>{
+    if( room.hotel ||
+        Object.entries(room).length === 0){
+          return false;
+      }else{
+          return true;
+      }
+}

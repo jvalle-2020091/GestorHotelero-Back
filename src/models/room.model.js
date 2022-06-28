@@ -9,6 +9,6 @@ const roomSchema = mongoose.Schema({
     price: Number,
     available: Boolean,
     dateAvalable: String
-})
+});
 
 module.exports = mongoose.model('room', roomSchema);
