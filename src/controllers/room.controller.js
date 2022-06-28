@@ -1,6 +1,7 @@
 'use strict'
 
-var room = require('../models/room.model');
+var Room = require('../models/room.model');
+const Hotel = require('../models/hotel.model');
 const {validateData, checkUpdate} = require ('../utils/validate');
 
 exports.test = (req, res)=>{
@@ -26,18 +27,22 @@ exports.getRooms = async(req, res)=>{
 
 // Agregar Cuartos
 
-exports.saveRooms = async(req, res)=>{
+exports.saveRoom = async(req, res)=>{
     try{
+        const userId = req.user.sub;
         const hotelId = req.params.id;
         const params = req.body;
         const data = {
             name: params.name,
             description: params.description,
-            category: params.category,
-            price: params.price
+            price: params.price,
+            available: 'Disponible',
+            dateAvalable: params.dateAvalable,
         };
         const msg = validateData(data);
         if(!msg){
+            let hotelExist = await Hotel.findOne({ _id: hotelId})
+            if(!hotelExist) return res.status(400).send({message: 'THIS HOTEL DOES NOT EXIST'});
             const room = new Room(data);
             await room.save();
             return res.send({message: 'Room Saved'});
