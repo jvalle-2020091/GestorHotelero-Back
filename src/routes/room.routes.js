@@ -7,8 +7,8 @@ const api = express.Router();
 
 api.get('/test', roomController.test);
 api.post('/saveRoom/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.saveRoom);
-api.put('/updateRoom/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.updateRoom);
-api.delete('/deleteRoom/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.deleteRoom);
+api.put('/updateRoom/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.updateRoom);
+api.delete('/deleteRoom/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.deleteRoom);
 api.get('/getRoomsByHotel/:id', mdAuth.ensureAuth, roomController.getRoomsByHotel);
 api.get('/getRooms', mdAuth.ensureAuth, roomController.getRooms);
 api.get('/getRoom/:id', mdAuth.ensureAuth, roomController.getRoom);

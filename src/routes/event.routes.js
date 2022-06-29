@@ -1,6 +1,6 @@
 'use strict'
 
-const EventoController=require('../controllers/evento.controller')
+const EventoController=require('../controllers/event.controller')
 const express = require('express');
 const api = express.Router();
 const mdAuth = require('../services/authenticated');

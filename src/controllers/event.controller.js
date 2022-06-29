@@ -1,6 +1,6 @@
 'use strict';
 
-const Evento= require ('../models/evento.model');
+const Evento= require ('../models/event.model');
 const User = require('../models/user.model');
 const Hotel = require('../models/hotel.model');
 const { validateData, checkUpdate } = require('../utils/validate');
@@ -27,7 +27,7 @@ exports.addEvento = async (req, res) => {
             console.log(checkHotel);
             if (checkHotel === null || checkHotel.id != hotel) 
                 return res.status(400).send({ message: 'You cannot add evento to this evento' });
-            
+                
                 const evento = new Evento(data);
                 await evento.save();
                 return res.send({message: 'Evento successfully created', evento });

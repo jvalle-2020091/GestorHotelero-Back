@@ -4,22 +4,27 @@ const Hotel= require('../models/hotel.model');
 const Service= require('../models/service.model');
 const validate = require('../utils/validate');
 
+//--------------------CRUD de Services---------------------------
+
 exports.addService = async (req, res) => {
     try {
+        const hotelId = req.params.id;
+        const userId = req.user.sub;
         const params = req.body;
-        const hotelId = req.hotel.id;
         let data = {
             hotel: req.params.id,
-            name: params.product,
-            description: params.stock,
-            price: 0
+            name: params.name,
+            description: params.description,
+            price: params.price
         }
         let msg = validate.validateData(data);
         if (!msg) {
-            const checkHotel = await Hotel.findOne({ _id: data.hotel });
-            if (checkHotel === null || checkHotel.hotel != hotelId) {
+            const checkHotel = await Hotel.findOne({ _id: hotelId });
+            if (checkHotel === null || checkHotel.id != hotelId) {
+                console.log(checkHotel);
                 return res.status(400).send({ message: 'You cannot add service to this hotel' });
             }else{
+                if(checkHotel.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
                 const service = new Service(data);
                 await service.save();
                 return res.send({ message: 'Service successfully created', service });
@@ -31,36 +36,26 @@ exports.addService = async (req, res) => {
         console.log(err);
         return res.status(500).send({ err, message: 'Error saving service' });
     }
-    
 }
 
 
 exports.updateService = async (req, res) => {
     try {
+        const userId = req.user.sub;
+        const hotelId = req.params.idHotel;
         const serviceId = req.params.id;
         const params = req.body;
-        const hotel = await hotel.findOne({_id: req.hotel.sub});
-        const checkService = await Service.findOne({ _id: serviceId })
-        if (checkService) {
-            const checkUpdated = await validate.checkUpdateService(params);
-            if (checkUpdated) {
-                const checkHotelService = await validate.findServiceOnHotel(hotel, checkService._id)
-                if(checkHotelService){
-                    const updateService = await Product.findOneAndUpdate({ _id: serviceId }, params, { new: true });
-                    if (updateService) {
-                        return res.send({ message: 'Updated :', updateService });
-                    } else {
-                        return res.send({ message: 'Failed to update ' });
-                    }
-                }else{
-                    return res.send({ message: 'You are not the owner '});
-                }
-            } else {
-                return res.status(400).send({ message: 'invalid parameters' });
-            }
-        } else {
-            return res.status(400).send({ message: 'service not found' });
-        }
+        const hotelExist = await Hotel.findOne({_id: hotelId });
+        console.log(hotelExist);
+        if(!hotelExist) return res.send({message: 'Hotel not found'});
+        if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
+        const checkService = await checkUpdateService(params);
+        if(checkService === false) return res.status(400).send({message: 'Not sending params to update or params cannot update'});
+        const updateService = await Room.findOneAndUpdate({_id: serviceId},params, {new: true})
+        .lean()
+       // .populate('hotel');
+        if(!updateService) return res.send({message: 'Service does not exist or service not updated'});
+        return res.send({message: 'Service updated successfully', updateService});
     } catch (err) {
         console.log(err);
         return res.status(500).send({ message: 'Error updating the service' });

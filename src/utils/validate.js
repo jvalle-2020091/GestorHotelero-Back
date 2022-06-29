@@ -148,3 +148,13 @@ exports.checkUpdateRoom = async(room)=>{
           return true;
       }
 }
+
+//------------------------Services--------------------------------------------------------
+exports.checkUpdateService = async(service)=>{
+    if( service.hotel ||
+        Object.entries(service).length === 0){
+          return false;
+      }else{
+          return true;
+      }
+}

@@ -43,6 +43,7 @@ exports.getRoom = async(req, res)=>{
 exports.saveRoom = async(req, res)=>{
     try{
         const hotel = req.params.id;
+        const userId = req.user.sub;
         const params = req.body;
         const data = {
             name: params.name,
@@ -56,6 +57,7 @@ exports.saveRoom = async(req, res)=>{
         if(!msg){
             let hotelExist = await Hotel.findOne({ _id: hotel})
             if(!hotelExist) return res.status(400).send({message: 'This hotel does not exist'});
+            if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
             const room = new Room(data);
             await room.save();
             return res.send({message: 'Room saved successfully', room});
@@ -70,11 +72,15 @@ exports.saveRoom = async(req, res)=>{
 exports.updateRoom = async(req, res)=>{
     try{
         const params = req.body;
+        const userId = req.user.sub;
+        const hotelId = req.params.idHotel;
         const roomId = req.params.id;
+        const hotelExist = await Hotel.findOne({_id: hotelId });
+        console.log(hotelExist);
+        if(!hotelExist) return res.send({message: 'Hotel not found'});
+        if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
         const checkRoom = await checkUpdateRoom(params);
         if(checkRoom === false) return res.status(400).send({message: 'Not sending params to update or params cannot update'});
-        /*const hotelExist = await Hotel.findOne({_id: params.hotel});
-        if(!hotelExist) return res.send({message: 'Hotel not found'});*/
         const updateRoom = await Room.findOneAndUpdate({_id: roomId},params, {new: true})
         .lean()
        // .populate('hotel');
@@ -89,7 +95,14 @@ exports.updateRoom = async(req, res)=>{
 
 exports.deleteRoom = async(req, res)=> {
     try{
+        const userId = req.user.sub;
+        const hotelId = req.params.idHotel;
         const roomId = req.params.id;
+        const hotelExist = await Hotel.findOne({_id: hotelId });
+        console.log(hotelExist);
+        if(!hotelExist) return res.send({message: 'Hotel not found'});
+        if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
+        
         const roomDeleted = await Room.findOneAndDelete({_id: roomId});
         if(!roomDeleted)return res.status(500).send({message: 'Room not found or already deleted'});
         return res.send({roomDeleted, message: 'Room deleted sucesfully'});
