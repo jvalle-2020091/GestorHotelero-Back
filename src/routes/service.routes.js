@@ -9,5 +9,7 @@ const mdAuth = require('../services/authenticated');
 api.post('/addService/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], serviceController.addService);
 api.put('/updateService/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], serviceController.updateService);
 api.delete('/deleteService/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], serviceController.deleteService);
-
+api.get('/getServices', mdAuth.ensureAuth, serviceController.getServices);
+api.get('/getService/:id', mdAuth.ensureAuth, serviceController.getService);
+api.get('/getServicesByHotel/:id', mdAuth.ensureAuth, serviceController.getServiceByHotel);
 module.exports = api;

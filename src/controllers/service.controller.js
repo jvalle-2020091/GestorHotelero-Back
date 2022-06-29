@@ -24,7 +24,7 @@ exports.addService = async (req, res) => {
                 console.log(checkHotel);
                 return res.status(400).send({ message: 'You cannot add service to this hotel' });
             }else{
-                if(checkHotel.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
+                if(checkHotel.adminHotel != userId) return  res.status(400).send({ message: 'This hotel does not belong to you'})
                 const service = new Service(data);
                 await service.save();
                 return res.send({ message: 'Service successfully created', service });
@@ -47,11 +47,11 @@ exports.updateService = async (req, res) => {
         const params = req.body;
         const hotelExist = await Hotel.findOne({_id: hotelId });
         console.log(hotelExist);
-        if(!hotelExist) return res.send({message: 'Hotel not found'});
-        if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
-        const checkService = await checkUpdateService(params);
+        if(!hotelExist) return res.status(400).send({message: 'Hotel not found'});
+        if(hotelExist.adminHotel != userId) return  res.status(400).send({ message: 'This hotel does not belong to you'})
+        const checkService = await validate.checkUpdateService(params);
         if(checkService === false) return res.status(400).send({message: 'Not sending params to update or params cannot update'});
-        const updateService = await Room.findOneAndUpdate({_id: serviceId},params, {new: true})
+        const updateService = await Service.findOneAndUpdate({_id: serviceId},params, {new: true})
         .lean()
        // .populate('hotel');
         if(!updateService) return res.send({message: 'Service does not exist or service not updated'});
@@ -64,38 +64,31 @@ exports.updateService = async (req, res) => {
 
 exports.deleteService = async (req, res) => {
     try {
+        const userId = req.user.sub;
+        const hotelId = req.params.idHotel;
         const serviceId = req.params.id;
-        const hotel = await Hotel.findOne({_id: req.hotel.sub});
-        const checkService = await Service.findOne({ _id: serviceId });
-        if(checkService){
-            const checkUserService = await validate.findServiceOnHotel(hotel, checkService._id);
-            if(checkUserService){
-                const serviceDeleted = await service.findOneAndDelete({ _id: serviceId });
-                await hotel.service.pull(checkUserService);
-                await hotel.save();
-                return res.send({ message: 'Service removed:', serviceDeleted });
-            }else{
-                return res.send({ message: 'You are not the owner of this service'});
-            }
-        }else{
-            return res.send({ message: 'Product not found or already removed' });
-        }
+        const hotelExist = await Hotel.findOne({_id: hotelId });
+
+        if(!hotelExist) return res.send({message: 'Hotel not found'});
+        if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
+        
+        const serviceDeleted = await Service.findOneAndDelete({_id: serviceId});
+        if(!serviceDeleted)return res.status(500).send({message: 'Service not found or already deleted'});
+
+        return res.send({serviceDeleted, message: 'Service deleted sucesfully'});
     } catch (err) {
         console.log(err);
-        return res.status(500).send({message: 'Failed to delete product' });
+        return res.status(500).send({message: 'Failed to delete service' });
     }
 }
 
 exports.getServices = async (req, res) => {
     try {
-        const hotel = await hotel.findOne({_id: req.hotel.sub}).populate('services');
-        const services = hotel.services
-        if(services)
-            return res.send({ message: 'services found:', products })
-            return res.send({ message: 'No services found' })
+        const services = await Service.find();
+        return res.send({services})
     } catch (err) {
         console.log(err);
-        return res.status(500).send({ message: 'Error looking for the sesrvices' });
+        return res.status(500).send({ message: 'Error looking for the services' });
     }
 }
 
@@ -107,6 +100,21 @@ exports.getService = async(req,res)=>{
         return res.send({message: 'Service found', service});
     }catch(err){
         console.log(err)
-        return err;
+        return res.status(500).send({ message: 'Error looking for the service' });
+
+    }
+}
+
+exports.getServiceByHotel = async (req, res) => {
+    try {
+        const hotelId = req.params.id;
+        const hotelExist = await Hotel.findOne({_id: hotelId});
+        if(!hotelExist) return res.send({ message: 'Hotel not found' });
+        const services = await Service.find({hotel: hotelId})
+            .lean(); 
+            return res.send({hotel: hotelExist.name, services: services});
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({err, message: 'Error searching services by hotel'});
     }
 }
