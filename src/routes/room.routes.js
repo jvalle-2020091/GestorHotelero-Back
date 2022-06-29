@@ -6,10 +6,14 @@ const mdAuth = require('../services/authenticated');
 const api = express.Router();
 
 api.get('/test', roomController.test);
+//--------------ADMIN-HOTEL------------------------
 api.post('/saveRoom/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.saveRoom);
 api.put('/updateRoom/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.updateRoom);
 api.delete('/deleteRoom/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], roomController.deleteRoom);
+
+//---------------CLIENTS-------------------------------
 api.get('/getRoomsByHotel/:id', mdAuth.ensureAuth, roomController.getRoomsByHotel);
+api.get('/getRoomsAvailable/:idHotel',mdAuth.ensureAuth, roomController.getRoomsAvailable);
 api.get('/getRooms', mdAuth.ensureAuth, roomController.getRooms);
 api.get('/getRoom/:id', mdAuth.ensureAuth, roomController.getRoom);
 
