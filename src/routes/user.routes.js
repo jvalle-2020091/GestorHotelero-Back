@@ -27,11 +27,11 @@ api.get('/getUser/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.getU
 
 //FUNCIONES PRIVADAS
 //ADMIN-APP
-api.post('/saveUserHotel', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.saveAdminHotel);
-api.put('/updateUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.updateAdminHotel);
-api.delete('/deleteUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.deleteAdminHotel);
-api.get('/getUsersHotel', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.getAdminsHotel);
-api.get('/getUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.getAdminHotel);
+api.post('/saveUserHotel', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.saveAdminHotel);
+api.put('/updateUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.updateAdminHotel);
+api.delete('/deleteUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.deleteAdminHotel);
+api.get('/getUsersHotel', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.getAdminsHotel);
+api.get('/getUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.getAdminHotel);
 
 
 

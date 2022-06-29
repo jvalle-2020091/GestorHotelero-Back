@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 
 const eventSchema = mongoose.Schema({
+    hotel: { type: mongoose.Schema.ObjectId,ref: 'hotel' },
     name: String,
     description: String,
     typeEvent: String,

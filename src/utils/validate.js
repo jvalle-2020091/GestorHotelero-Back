@@ -94,9 +94,17 @@ exports.checkUpdateAdmin = async(params)=>{
 
 //------------------------------------ HOTELES------------------------
 
-exports.alreadyHotel = async ( adminHotel , name)=>{
+exports.alreadyHotel = async (  name)=>{
     try{
-     let exist = Hotel.findOne({  adminHotel:adminHotel , name:name}).lean()
+     let exist = Hotel.findOne({   name:name}).lean()
+     return exist;
+    }catch(err){
+        return err;
+    }
+}
+exports.alreadyHotelUser = async ( adminHotel)=>{
+    try{
+     let exist = Hotel.findOne({  adminHotel:adminHotel }).lean()
      return exist;
     }catch(err){
         return err;

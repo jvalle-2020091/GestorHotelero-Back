@@ -1,15 +1,15 @@
 'use strict'
 
 const Hotel= require('../models/hotel.model');
-const service= require('../models/service.model');
+const Service= require('../models/service.model');
 const validate = require('../utils/validate');
 
 exports.addService = async (req, res) => {
     try {
         const params = req.body;
-        const hotelId = req.hotel.sub;
+        const hotelId = req.hotel.id;
         let data = {
-            hotel: params.hotel,
+            hotel: req.params.id,
             name: params.product,
             description: params.stock,
             price: 0
@@ -101,5 +101,17 @@ exports.getServices = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).send({ message: 'Error looking for the sesrvices' });
+    }
+}
+
+exports.getService = async(req,res)=>{
+    try{
+        const serviceId = req.params.id
+        const service = await Service.findOne({_id: serviceId});
+        if(!service)return res.send({message: 'Service not found'})
+        return res.send({message: 'Service found', service});
+    }catch(err){
+        console.log(err)
+        return err;
     }
 }

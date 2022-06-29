@@ -4,23 +4,24 @@ const jwt = require('jwt-simple');
 const moment = require('moment');
 const secretKey = 'SecretKeyToExample';
 
-exports.createToken = async (user)=>{
-    try{
+exports.createToken = async (user) => {
+    try {
         const payload = {
             sub: user._id,
             name: user.name,
+            surname: user.surname,
             username: user.username,
-            email: user.emai,
+            email: user.email,
             password: user.password,
-            role: user.role,
             phone: user.phone,
+            role: user.role,
             iat: moment().unix(),
-            exp: moment().add(24, 'hours').unix()
+            exp: moment().add(12, 'hours').unix()
         }
-        return jwt.encode(payload, secretKey);
-    }catch(err){
+        return jwt.encode(payload, secretKey)
+
+    } catch (err) {
         console.log(err);
-        return err
+        return err;
     }
-    
 }

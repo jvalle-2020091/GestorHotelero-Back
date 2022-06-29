@@ -17,18 +17,30 @@ exports.ensureAuth = (req, res, next)=>{
         }catch(err){
             return res.status(404).send({message: 'El token no es valido'});
         }
-        req.enterprise = payload;
+        req.user = payload;
         next();
     }
 }
 
 exports.isAdmin = async (req, res, next)=>{
     try{
-        const enterprise = req.enterprise;
-        if(enterprise.role === 'ADMIN-APP') return next();
+        const user = req.user;
+        if(user.role === 'ADMIN-HOTEL') return next();
         else return res.status(403).send({message: 'User is unauthorized'});
     }catch(err){
         console.log(err);
         return err;
+    }
+}
+
+exports.isAdminAPP = async (req, res, next)=>{
+    try{
+        const user = req.user;
+        if(user.role === 'ADMIN-APP') return next();
+        else return res.status(403).send({message: 'User is unauthorized'});
+    }catch(err){
+        console.log(err);
+        return err;
+
     }
 }

@@ -55,7 +55,7 @@ exports.saveRoom = async(req, res)=>{
         const msg = validateData(data);
         if(!msg){
             let hotelExist = await Hotel.findOne({ _id: hotel})
-            if(!hotelExist) return res.status(400).send({message: 'THIS HOTEL DOES NOT EXIST'});
+            if(!hotelExist) return res.status(400).send({message: 'This hotel does not exist'});
             const room = new Room(data);
             await room.save();
             return res.send({message: 'Room saved successfully', room});

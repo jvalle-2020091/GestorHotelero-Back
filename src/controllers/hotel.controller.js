@@ -1,6 +1,6 @@
 'use strict'
 
-const { validateData, alreadyHotel, checkUpdate, validExtension, alreadyHotelUpdated} = require('../utils/validate');
+const {alreadyHotelUser, validateData, alreadyHotel, checkUpdate, validExtension, alreadyHotelUpdated} = require('../utils/validate');
 const User = require('../models/user.model');
 const Hotel = require('../models/hotel.model');
 const fs = require('fs');
@@ -10,31 +10,26 @@ exports.testHotel = (req, res)=>{
     return res.send({message: 'Function test is running'});
 }
 
-exports.saveHotel = async(req, res)=>{
+//---------------------Funciones del ADMIN-APP-------------------------------
+exports.saveHotelByAdmin = async(req, res)=>{
     try{
         const params = req.body;
         const data = {
+            adminHotel: params.adminHotel,
             name: params.name,
             address: params.address,
             phone: params.phone,
             timesRequest: 0,
-            adminHotel: params.adminHotel
         };
         const msg = validateData(data);
         if(!msg){
-            let hotelExist = await alreadyHotel( data.adminHotel , data.name);
+            let hotelExist = await alreadyHotel( data.name);
             if(hotelExist) return res.status(400).send({message: 'This hotel already exists'});
+            let userExist = await alreadyHotelUser( data.adminHotel);
+            if(userExist) return res.status(400).send({message: 'A user can only create one hotel'});
             const checkAdmin = await User.findOne({ _id: data.adminHotel });
             if(checkAdmin === null || checkAdmin._id != data.adminHotel)
             return res.send({message: 'User not exists'})
-                console.log(checkAdmin);
-            const hotelAlready = await Hotel.findOne({ 
-                $and: [
-                    {name: data.name},
-                    {adminHotel: data.adminHotel}
-                ]
-            });
-            if(hotelAlready)return res.send({message: 'This hotel already existed'});
             const hotel = new Hotel(data);
             await hotel.save();
             return res.send({message: 'Hotel saved successfully'})
@@ -45,11 +40,11 @@ exports.saveHotel = async(req, res)=>{
     }
 }
 
-exports.updateHotel = async(req, res)=>{
+exports.updateHotelByAdmin = async(req, res)=>{
     try{
         const hotelId = req.params.id;
         const params = req.body;
-
+        
         const hotelExist = await Hotel.findOne({ _id: hotelId});
         if (!hotelExist) return res.send({ message: 'Hotel not found' });
 
@@ -68,7 +63,7 @@ exports.updateHotel = async(req, res)=>{
     }
 }
 
-exports.deleteHotel = async(req, res)=>{
+exports.deleteHotelByAdmin = async(req, res)=>{
     try{
         const hoteId = req.params.id;
 
@@ -84,6 +79,87 @@ exports.deleteHotel = async(req, res)=>{
     }
 }
 
+//---------------------Role ADMIN-HOTEL pueda agregar su hotel-----------------------------------
+exports.saveHotel = async(req, res)=>{
+    try{
+        const params = req.body;
+        const data = {
+            adminHotel: req.user.sub,
+            name: params.name,
+            address: params.address,
+            phone: params.phone,
+            timesRequest: 0,
+        };
+        const msg = validateData(data);
+        if(!msg){
+            let hotelExist = await alreadyHotel( data.name);
+            if(hotelExist) return res.status(400).send({message: 'This hotel already exists'});
+            let userExist = await alreadyHotelUser( data.adminHotel);
+            if(userExist) return res.status(400).send({message: 'A user can only create one hotel'});
+            const checkAdmin = await User.findOne({ _id: data.adminHotel });
+            if(checkAdmin === null || checkAdmin._id != data.adminHotel)
+            return res.send({message: 'User not exists'})
+                console.log(checkAdmin);
+           /* const hotelAlready = await Hotel.findOne({ 
+                $and: [
+                    {name: data.name},
+                    {adminHotel: data.adminHotel}
+                ]
+            });
+            if(hotelAlready)return res.send({message: 'This hotel already existed'}); */
+            const hotel = new Hotel(data);
+            await hotel.save();
+            return res.send({message: 'Hotel saved successfully'})
+        }else return res.status(400).send(msg);
+    }catch(err){
+        console.log(err);
+        return res.status(500).send({err, message: 'Error saving Hotel'});
+    }
+}
+
+exports.updateHotel = async(req, res)=>{
+    try{
+        const hotelId = req.params.id;
+        const params = req.body;
+        const userId = req.user.sub
+
+        const hotelExist = await Hotel.findOne({ _id: hotelId});
+        if (!hotelExist) return res.send({ message: 'Hotel not found' });
+        if (hotelExist.adminHotel != userId) return res.send({ message: 'You cant upgrade this hotel because it doesnt belong to you' });
+        const validateUpdate = await checkUpdate(params);
+        if(validateUpdate === false) return res.status(400).send({message: 'Cannot update this information or invalid params'});
+
+        let alreadyname = await alreadyHotelUpdated(params.name);
+        if(alreadyname) return res.send({message: 'This hotel already exists'});
+
+        const updateHotel = await Hotel.findOneAndUpdate({_id: hotelId}, params, {new: true});
+        if(!updateHotel) return res.send({message: 'Hotel not updated'});
+        return res.send({message: 'Update Hotel', updateHotel});
+    }catch(err){
+        console.log(err);
+        return res.status(500).send({ err, message: 'Error updating hotel' });
+    }
+}
+
+exports.deleteHotel = async(req, res)=>{
+    try{
+        const hoteId = req.params.id;
+        const userId = req.user.sub
+
+        const hotelExist = await Hotel.findOne({_id: hoteId});
+        if(!hotelExist) return res.send({message: 'Hotel not found'});
+        if (hotelExist.adminHotel != userId) return res.send({ message: 'You cant delete this hotel because it doesnt belong to you' });
+
+        const hotelDeleted = await Hotel.findOneAndDelete({ _id: hoteId });
+        if(!hotelDeleted) return res.status(400).send({message: 'Hotel not deleted'});
+        return res.send({ message: 'Hotel deleted successfully', hotelDeleted });
+    }catch(err){
+        console.log(err);
+        return res.status(500).send({err, message: 'Error deleting hotel'});
+    }
+}
+
+//----------------------Funciones para todos los usuarios------------------------------------
 exports.getHotels = async(req, res)=>{
     try{
         const hotels = await Hotel.find();
@@ -122,6 +198,8 @@ exports.searchHotel = async(req, res)=>{
     }
 }
 
+
+//---------------------Carga de imagenes-----------------------
 exports.uploadImage = async(req, res)=>{
     try{
         const hotelId = req.params.id;
