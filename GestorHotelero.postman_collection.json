@@ -478,14 +478,15 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:3200/service/getServices",
+							"raw": "localhost:3200/service/getServices/62bbc85c8cf21bef722ffd78",
 							"host": [
 								"localhost"
 							],
 							"port": "3200",
 							"path": [
 								"service",
-								"getServices"
+								"getServices",
+								"62bbc85c8cf21bef722ffd78"
 							]
 						}
 					},
@@ -536,7 +537,7 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "localhost:3200/service/getService/62bbf35ff3552dd1645b0e16",
+							"raw": "localhost:3200/service/getService/62bbc85c8cf21bef722ffd78/62bbf35ff3552dd1645b0e16",
 							"host": [
 								"localhost"
 							],
@@ -544,6 +545,7 @@
 							"path": [
 								"service",
 								"getService",
+								"62bbc85c8cf21bef722ffd78",
 								"62bbf35ff3552dd1645b0e16"
 							]
 						}
@@ -627,19 +629,26 @@
 					"response": []
 				},
 				{
-					"name": "localhost:3200/room/getRooms",
+					"name": "getRooms",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGQxOWY3YjU2M2ZiODI4ZGQ2NzkiLCJuYW1lIjoiSm9zdWVBZG1pbiIsInVzZXJuYW1lIjoiakFkbWluIiwiZW1haWwiOiJqQWRtaW5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkd1B1ZHJzZHhKOEVyWWE4TWkyNUsuLkZmV2VqRVJmejJ0dFJXOXpHRmh3NmhBWjlJdE15TUciLCJyb2xlIjoiQURNSU4tSE9URUwiLCJpYXQiOjE2NTY1NTk0MzksImV4cCI6MTY1NjYwMjYzOX0.85HaXWAMKvXcyQsyg0gmfHki33ah3AC-ven-4Kgesr8",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "localhost:3200/room/getRooms",
+							"raw": "localhost:3200/room/getRooms/62bbc85c8cf21bef722ffd78",
 							"host": [
 								"localhost"
 							],
 							"port": "3200",
 							"path": [
 								"room",
-								"getRooms"
+								"getRooms",
+								"62bbc85c8cf21bef722ffd78"
 							]
 						}
 					},
@@ -721,18 +730,18 @@
 					"response": []
 				},
 				{
-					"name": "localhost:3200/room/getRoom/62ba6c563b0d475b3098f2f7",
+					"name": "getRoom",
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGE5ZTljM2Q1NzNmNTQxOTI1MzMiLCJuYW1lIjoiQURNSU4iLCJ1c2VybmFtZSI6IkFETUlOLUFQUCIsInBhc3N3b3JkIjoiJDJhJDEwJEZSUXdkU2U1b0xkejlHL1hXNWROTGUudEVVWE5WbXkzOG9xaGEuZmRZeS9aNFptV21NLlVLIiwicm9sZSI6IkFETUlOLUFQUCIsImlhdCI6MTY1NjM4NjYyMiwiZXhwIjoxNjU2NDczMDIyfQ.3mz5KaxaiC3-Ep4CduOWCB8zqOT5ns7EvMW0GRlopa8\"",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGQxOWY3YjU2M2ZiODI4ZGQ2NzkiLCJuYW1lIjoiSm9zdWVBZG1pbiIsInVzZXJuYW1lIjoiakFkbWluIiwiZW1haWwiOiJqQWRtaW5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkd1B1ZHJzZHhKOEVyWWE4TWkyNUsuLkZmV2VqRVJmejJ0dFJXOXpHRmh3NmhBWjlJdE15TUciLCJyb2xlIjoiQURNSU4tSE9URUwiLCJpYXQiOjE2NTY1NTk0MzksImV4cCI6MTY1NjYwMjYzOX0.85HaXWAMKvXcyQsyg0gmfHki33ah3AC-ven-4Kgesr8",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "localhost:3200/room/getRoom/62ba6c563b0d475b3098f2f7",
+							"raw": "localhost:3200/room/getRoom/62bbc85c8cf21bef722ffd78/62bcbdb5d4f3d312bbbb2911",
 							"host": [
 								"localhost"
 							],
@@ -740,7 +749,8 @@
 							"path": [
 								"room",
 								"getRoom",
-								"62ba6c563b0d475b3098f2f7"
+								"62bbc85c8cf21bef722ffd78",
+								"62bcbdb5d4f3d312bbbb2911"
 							]
 						}
 					},
@@ -810,7 +820,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmI5NGYxZTFjZjI5MGE4ZjcxNTIwMjUiLCJuYW1lIjoiYnlyb24iLCJ1c2VybmFtZSI6ImJ5cm9uNzEzIiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTY1NjM2NzM4NCwiZXhwIjoxNjU2Mzc0NTg0fQ.TJmASWdtQzQkkYi-TJCPgxAdoAsLO5FNygpd7IICE7I\"",
+								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGQxOWY3YjU2M2ZiODI4ZGQ2NzkiLCJuYW1lIjoiSm9zdWVBZG1pbiIsInVzZXJuYW1lIjoiakFkbWluIiwiZW1haWwiOiJqQWRtaW5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkd1B1ZHJzZHhKOEVyWWE4TWkyNUsuLkZmV2VqRVJmejJ0dFJXOXpHRmh3NmhBWjlJdE15TUciLCJyb2xlIjoiQURNSU4tSE9URUwiLCJpYXQiOjE2NTY1MzM4NTIsImV4cCI6MTY1NjU3NzA1Mn0.2ulCMUbW9QGIfggxvFE1rbtioZwuESOy50Hpt8NS004\"",
 								"type": "default"
 							}
 						],
@@ -819,43 +829,36 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "hola",
+									"value": "cumpleaños",
 									"type": "default"
 								},
 								{
 									"key": "description",
-									"value": "holas",
+									"value": "cumple",
 									"type": "default"
 								},
 								{
-									"key": "dateEvento",
-									"value": "hoolaa",
+									"key": "typeEvent",
+									"value": "Cumpleaños",
 									"type": "default"
 								},
 								{
-									"key": "",
-									"value": "",
-									"type": "default",
-									"disabled": true
-								},
-								{
-									"key": "",
-									"value": "",
-									"type": "default",
-									"disabled": true
+									"key": "dateEvent",
+									"value": "02-02-2022",
+									"type": "default"
 								}
 							]
 						},
 						"url": {
-							"raw": "localhost:3200/evento/addEvento/62b95a0ecfd91de7dcbe1e0b",
+							"raw": "localhost:3200/event/addEvent/62bbc85c8cf21bef722ffd78",
 							"host": [
 								"localhost"
 							],
 							"port": "3200",
 							"path": [
-								"evento",
-								"addEvento",
-								"62b95a0ecfd91de7dcbe1e0b"
+								"event",
+								"addEvent",
+								"62bbc85c8cf21bef722ffd78"
 							]
 						}
 					},
@@ -868,7 +871,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmI5NGYxZTFjZjI5MGE4ZjcxNTIwMjUiLCJuYW1lIjoiYnlyb24iLCJ1c2VybmFtZSI6ImJ5cm9uNzEzIiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTY1NjM1ODQyMywiZXhwIjoxNjU2MzY1NjIzfQ.WPOZwXEJMFXiQqYg8Q3VK1H2qhRgjyW30EA_3CJAttE\"",
+								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGQxOWY3YjU2M2ZiODI4ZGQ2NzkiLCJuYW1lIjoiSm9zdWVBZG1pbiIsInVzZXJuYW1lIjoiakFkbWluIiwiZW1haWwiOiJqQWRtaW5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkd1B1ZHJzZHhKOEVyWWE4TWkyNUsuLkZmV2VqRVJmejJ0dFJXOXpHRmh3NmhBWjlJdE15TUciLCJyb2xlIjoiQURNSU4tSE9URUwiLCJpYXQiOjE2NTY1MzM4NTIsImV4cCI6MTY1NjU3NzA1Mn0.2ulCMUbW9QGIfggxvFE1rbtioZwuESOy50Hpt8NS004\"",
 								"type": "default"
 							}
 						],
@@ -877,7 +880,7 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "events",
+									"value": "cumpleaños5",
 									"type": "default"
 								},
 								{
@@ -888,20 +891,22 @@
 								{
 									"key": "dateEvento",
 									"value": "players",
-									"type": "default"
+									"type": "default",
+									"disabled": true
 								}
 							]
 						},
 						"url": {
-							"raw": "localhost:3200/evento/updateEvento/62ba0f6dde3f102426b8c060",
+							"raw": "localhost:3200/event/updateEvent/62bbc85c8cf21bef722ffd78/62bcc5f1ddd14791d9da322c",
 							"host": [
 								"localhost"
 							],
 							"port": "3200",
 							"path": [
-								"evento",
-								"updateEvento",
-								"62ba0f6dde3f102426b8c060"
+								"event",
+								"updateEvent",
+								"62bbc85c8cf21bef722ffd78",
+								"62bcc5f1ddd14791d9da322c"
 							]
 						}
 					},
@@ -911,9 +916,25 @@
 					"name": "DeleteEvent",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGQxOWY3YjU2M2ZiODI4ZGQ2NzkiLCJuYW1lIjoiSm9zdWVBZG1pbiIsInVzZXJuYW1lIjoiakFkbWluIiwiZW1haWwiOiJqQWRtaW5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkd1B1ZHJzZHhKOEVyWWE4TWkyNUsuLkZmV2VqRVJmejJ0dFJXOXpHRmh3NmhBWjlJdE15TUciLCJyb2xlIjoiQURNSU4tSE9URUwiLCJpYXQiOjE2NTY1MzM4NTIsImV4cCI6MTY1NjU3NzA1Mn0.2ulCMUbW9QGIfggxvFE1rbtioZwuESOy50Hpt8NS004\"",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": ""
+							"raw": "localhost:3200/event/deleteEvent/62bbc85c8cf21bef722ffd78/62bcc5f1ddd14791d9da322c",
+							"host": [
+								"localhost"
+							],
+							"port": "3200",
+							"path": [
+								"event",
+								"deleteEvent",
+								"62bbc85c8cf21bef722ffd78",
+								"62bcc5f1ddd14791d9da322c"
+							]
 						}
 					},
 					"response": []
@@ -928,7 +949,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmI5NGYxZTFjZjI5MGE4ZjcxNTIwMjUiLCJuYW1lIjoiYnlyb24iLCJ1c2VybmFtZSI6ImJ5cm9uNzEzIiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTY1NjM2NzM4NCwiZXhwIjoxNjU2Mzc0NTg0fQ.TJmASWdtQzQkkYi-TJCPgxAdoAsLO5FNygpd7IICE7I\"",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGQxOWY3YjU2M2ZiODI4ZGQ2NzkiLCJuYW1lIjoiSm9zdWVBZG1pbiIsInVzZXJuYW1lIjoiakFkbWluIiwiZW1haWwiOiJqQWRtaW5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkd1B1ZHJzZHhKOEVyWWE4TWkyNUsuLkZmV2VqRVJmejJ0dFJXOXpHRmh3NmhBWjlJdE15TUciLCJyb2xlIjoiQURNSU4tSE9URUwiLCJpYXQiOjE2NTY1NTk0MzksImV4cCI6MTY1NjYwMjYzOX0.85HaXWAMKvXcyQsyg0gmfHki33ah3AC-ven-4Kgesr8",
 								"type": "default"
 							}
 						],
@@ -937,15 +958,16 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "localhost:3200/evento/getEvento/62ba0f6dde3f102426b8c060",
+							"raw": "localhost:3200/event/getEvent/62bbc85c8cf21bef722ffd78/62bcc62fd5308c959b7c8b4a",
 							"host": [
 								"localhost"
 							],
 							"port": "3200",
 							"path": [
-								"evento",
-								"getEvento",
-								"62ba0f6dde3f102426b8c060"
+								"event",
+								"getEvent",
+								"62bbc85c8cf21bef722ffd78",
+								"62bcc62fd5308c959b7c8b4a"
 							]
 						}
 					},
@@ -958,19 +980,20 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmI5NGYxZTFjZjI5MGE4ZjcxNTIwMjUiLCJuYW1lIjoiYnlyb24iLCJ1c2VybmFtZSI6ImJ5cm9uNzEzIiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTY1NjM3NTM4NSwiZXhwIjoxNjU2MzgyNTg1fQ.cL4IUn3dl0DjNaEtJStzXv-zJgbpBOjZt8h5HsrkHwQ\"",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MmJhMGQxOWY3YjU2M2ZiODI4ZGQ2NzkiLCJuYW1lIjoiSm9zdWVBZG1pbiIsInVzZXJuYW1lIjoiakFkbWluIiwiZW1haWwiOiJqQWRtaW5AZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkd1B1ZHJzZHhKOEVyWWE4TWkyNUsuLkZmV2VqRVJmejJ0dFJXOXpHRmh3NmhBWjlJdE15TUciLCJyb2xlIjoiQURNSU4tSE9URUwiLCJpYXQiOjE2NTY1NTk0MzksImV4cCI6MTY1NjYwMjYzOX0.85HaXWAMKvXcyQsyg0gmfHki33ah3AC-ven-4Kgesr8",
 								"type": "default"
 							}
 						],
 						"url": {
-							"raw": "localhost:3200/evento/getEventos",
+							"raw": "localhost:3200/event/getEvents/62bbc85c8cf21bef722ffd78",
 							"host": [
 								"localhost"
 							],
 							"port": "3200",
 							"path": [
-								"evento",
-								"getEventos"
+								"event",
+								"getEvents",
+								"62bbc85c8cf21bef722ffd78"
 							]
 						}
 					},
