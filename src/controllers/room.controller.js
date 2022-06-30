@@ -16,26 +16,47 @@ exports.test = (req, res)=>{
 
 //--------------------------------CRUD DE ROOMS-----------------------------------------
 
-exports.getRooms = async(req, res)=>{
-    try{
-        const rooms = await Room.find();
-        return res.send({rooms})
-    }catch(err){
+exports.getRooms = async (req, res) => {
+    try {
+        const hotelId = req.params.idHotel;
+        const userId = req.user.sub;
+
+        const checkUserHotel = await Hotel.findOne({ _id: hotelId }).lean()
+        if (checkUserHotel == null || checkUserHotel.adminHotel != userId) {
+            return res.status(404).send({ message: 'You can not see the rooms of this hotel' });
+        } else {
+            const rooms = await Room.find({ hotel: hotelId }).lean().populate('hotel');
+            if (!rooms) {
+                return res.staus(400).send({ message: 'Rooms not found' });
+            } else {
+                return res.send({ messsage: 'Rooms found:', rooms });
+            }
+        }
+    } catch (err) {
         console.log(err);
-        return res.status(500).send({err, message:'Error getting rooms'})
+        return res.status(500).send({ message: 'Error getting the rooms' });
     }
 }
 
-exports.getRoom = async(req, res)=>{
-    try{
+exports.getRoom = async (req, res) => {
+    try {
+        const hotelId = req.params.idHotel;
+        const userId = req.user.sub;
         const roomId = req.params.id;
-        const room = await Room.findOne({_id: roomId})
-        .lean()
-        if(!room) return res.status(404).send({message: 'Room not found'});
-        return res.send({message: 'Room found:', room});
-    }catch(err){
+        const checkUserHotel = await Hotel.findOne({ _id: hotelId }).lean()
+        if (checkUserHotel == null || checkUserHotel.adminHotel != userId) {
+            return res.status(404).send({ message: 'You cannot see the rooms of this hotel' });
+        } else {
+            const checkRoomHotel = await Room.findOne({ _id: roomId, hotel: hotelId }).populate('hotel').lean();
+            if (checkRoomHotel == null || checkRoomHotel.hotel._id != hotelId) {
+                return res.status(404).send({ message: 'You cant see this room' });
+            } else {
+                return res.send({ message: 'Room found:', checkRoomHotel });
+            }
+        }
+    } catch (err) {
         console.log(err);
-        return res.status(500).send({err, message:'Error getting rooms'})
+        return res.status(500).send({ message: 'Error getting room' });
     }
 }
 
@@ -57,7 +78,11 @@ exports.saveRoom = async(req, res)=>{
         if(!msg){
             let hotelExist = await Hotel.findOne({ _id: hotel})
             if(!hotelExist) return res.status(400).send({message: 'This hotel does not exist'});
-            if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
+            if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'});
+
+            const checkRoom = await Room.findOne({ name: data.name }).lean()
+            if (checkRoom != null) return res.status(400).send({ message: 'An room with the same name already exists' });
+
             const room = new Room(data);
             await room.save();
             return res.send({message: 'Room saved successfully', room});
@@ -75,12 +100,20 @@ exports.updateRoom = async(req, res)=>{
         const userId = req.user.sub;
         const hotelId = req.params.idHotel;
         const roomId = req.params.id;
+
         const hotelExist = await Hotel.findOne({_id: hotelId });
-        console.log(hotelExist);
         if(!hotelExist) return res.send({message: 'Hotel not found'});
-        if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'})
+        if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'});
+
+        const checkHotelRoom = await Room.findOne({ _id: roomId, hotel: hotelId }).populate('hotel').lean()
+        if (checkHotelRoom == null || checkHotelRoom.hotel._id != hotelId) return res.status(400).send({ message: 'You cant update this room' })
+
+        const checkRoomUpdated = await Room.findOne({ name: params.name, hotel: hotelId }).lean()
+        if (checkRoomUpdated != null) return res.status(400).send({ message: 'An room with the same name already exists' });
+
         const checkRoom = await checkUpdateRoom(params);
         if(checkRoom === false) return res.status(400).send({message: 'Not sending params to update or params cannot update'});
+
         const updateRoom = await Room.findOneAndUpdate({_id: roomId},params, {new: true})
         .lean()
        // .populate('hotel');
@@ -120,6 +153,7 @@ exports.getRoomsByHotel = async (req, res) => {
         if(!hotelExist) return res.send({ message: 'Hotel not found' });
         const rooms = await Room.find({hotel: hotelId})
             .lean(); 
+            if(!rooms) return res.staus(400).send({ message: 'Rooms not found' });
             return res.send({hotel: hotelExist.name, rooms: rooms});
     } catch (err) {
         console.log(err);

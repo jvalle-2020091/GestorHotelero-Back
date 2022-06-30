@@ -14,7 +14,7 @@ api.delete('/deleteRoom/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], room
 //---------------CLIENTS-------------------------------
 api.get('/getRoomsByHotel/:id', mdAuth.ensureAuth, roomController.getRoomsByHotel);
 api.get('/getRoomsAvailable/:idHotel',mdAuth.ensureAuth, roomController.getRoomsAvailable);
-api.get('/getRooms', mdAuth.ensureAuth, roomController.getRooms);
-api.get('/getRoom/:id', mdAuth.ensureAuth, roomController.getRoom);
+api.get('/getRooms/:idHotel', mdAuth.ensureAuth, roomController.getRooms);
+api.get('/getRoom/:idHotel/:id', mdAuth.ensureAuth, roomController.getRoom);
 
 module.exports = api;

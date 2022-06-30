@@ -7,10 +7,10 @@ const mdAuth = require('../services/authenticated');
 
 //rutas publicas
 api.get('/test', mdAuth.ensureAuth, EventoController.testEvento)
-api.post('/addEvento/:id', mdAuth.ensureAuth, EventoController.addEvento);
-api.put('/updateEvento/:id', EventoController.updateEvento);
-api.delete('/deleteEvento/:id', mdAuth.ensureAuth, EventoController.deleteEvento);
-api.get('/getEvento/:id', mdAuth.ensureAuth,EventoController.getEvento);
-api.get('/getEventos',mdAuth.ensureAuth, EventoController.getEventos);
+api.post('/addEvent/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], EventoController.addEvent);
+api.put('/updateEvent/:idHotel/:id',[mdAuth.ensureAuth, mdAuth.isAdmin],  EventoController.updateEvent);
+api.delete('/deleteEvent/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin],  EventoController.deleteEvent);
+api.get('/getEvent/:idHotel/:id', mdAuth.ensureAuth,EventoController.getEvent);
+api.get('/getEvents/:idHotel',mdAuth.ensureAuth, EventoController.getEvents);
 
 module.exports = api;

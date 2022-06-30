@@ -1,9 +1,9 @@
 'use strict';
 
-const Evento= require ('../models/event.model');
+const Event = require ('../models/event.model');
 const User = require('../models/user.model');
 const Hotel = require('../models/hotel.model');
-const { validateData, checkUpdate } = require('../utils/validate');
+const { validateData, checkUpdateEvent } = require('../utils/validate');
 
 
 //testeo de controller Evento
@@ -11,26 +11,32 @@ exports.testEvento=(req, res)=>{
     return res.send({menssage: 'el controlador evento esta funcionando'})
 }
 
-exports.addEvento = async (req, res) => {
+//-----------------------------CRUD De Events--------------------------------------
+exports.addEvent = async (req, res) => {
     try {
         const hotel = req.params.id;
+        const userId = req.user.sub;
         const params = req.body;
         let data = {
+            hotel: req.params.id,
             name: params.name,
             description: params.description,
-            dateEvento: params.dateEvento,
-            hotel: params.hotel,
+            typeEvent: params.typeEvent,
+            dateEvent: params.dateEvent
         }
         let msg = validateData(data);
         if (!msg) {
+
             const checkHotel = await Hotel.findOne({ _id: hotel });
-            console.log(checkHotel);
-            if (checkHotel === null || checkHotel.id != hotel) 
-                return res.status(400).send({ message: 'You cannot add evento to this evento' });
-                
-                const evento = new Evento(data);
-                await evento.save();
-                return res.send({message: 'Evento successfully created', evento });
+            if (checkHotel === null || checkHotel.id != hotel) return res.status(400).send({ message: 'You cannot add evento to this evento' });
+                if(checkHotel.adminHotel != userId) return  res.status(400).send({ message: 'This hotel does not belong to you'});
+
+                const checkEvent = await Event.findOne({ name: data.name }).lean()
+                if (checkEvent != null) return res.status(400).send({ message: 'An event with the same name already exists' });
+
+                const event = new Event(data);
+                await event.save();
+                return res.send({message: 'Evento successfully created', event });
             
         }else{
             return res.status(400).send(msg);
@@ -41,38 +47,51 @@ exports.addEvento = async (req, res) => {
     }
 }
 
-exports.updateEvento = async(req, res)=>{
+exports.updateEvent = async(req, res)=>{
     try{
-        const eventoId = req.params.id;
+        const userId = req.user.sub;
+        const hotelId = req.params.idHotel;
+        const eventId = req.params.id;
         const params = req.body;
 
-        const eventoExist = await Evento.findOne({ _id: eventoId});
-        if (!eventoExist) return res.send({ message: 'Evento not found' });
+        const hotelExist = await Hotel.findOne({_id: hotelId });
+        if(!hotelExist) return res.status(400).send({message: 'Hotel not found'});
+        if(hotelExist.adminHotel != userId) return  res.status(400).send({ message: 'This hotel does not belong to you'})
 
-        const validateUpdate = await checkUpdate(params);
-        if(validateUpdate === false) return res.status(400).send({message: 'Cannot update this information or invalid params'});
+        const checkHotelEvent = await Event.findOne({ _id: eventId, hotel: hotelId }).populate('hotel').lean()
+        if (checkHotelEvent == null || checkHotelEvent.hotel._id != hotelId) return res.status(400).send({ message: 'You cant update this event' })
 
-        //let alreadyname = await alreadyEvento(params.name);
-        //if(alreadyname) return res.send({message: 'This evento already exists'});
+        const checkEventUpdated = await Event.findOne({ name: params.name, hotel: hotelId }).lean()
+        if (checkEventUpdated != null) return res.status(400).send({ message: 'An event with the same name already exists' });
 
-        const updateEvento = await Evento.findOneAndUpdate({_id: eventoId}, params, {new: true});
-        if(!updateEvento) return res.send({message: 'Evento not updated'});
-        return res.send({message: 'Update Evento', updateEvento});
+        const checkEvent = await checkUpdateEvent(params);
+        if(checkEvent === false) return res.status(400).send({message: 'Not sending params to update or params cannot update'});
+
+        const updateEvent = await Event.findOneAndUpdate({_id: eventId},params, {new: true})
+        .lean()
+        if(!updateEvent) return res.send({message: 'Event does not exist or event not updated'});
+        return res.send({message: 'Event updated successfully', updateEvent});
     }catch(err){
         console.log(err);
         return res.status(500).send({ err, message: 'Error updating evento' });
     }
 }
 
-exports.deleteEvento = async(req, res)=>{
+exports.deleteEvent = async(req, res)=>{
     try{
-        const eventoId = req.params.id;
+        const userId = req.user.sub;
+        const hotelId = req.params.idHotel;
+        const eventId = req.params.id;
 
-        const eventoExist = await Evento.findOne({_id: eventoId});
-        if(!eventoExist) return res.send({message: 'Evento not found'});
+        const hotelExist = await Hotel.findOne({_id: hotelId });
+        if(!hotelExist) return res.status(400).send({message: 'Hotel not found'});
+        if(hotelExist.adminHotel != userId) return  res.status(400).send({ message: 'This hotel does not belong to you'})
 
-        const eventoDeleted = await Evento.findOneAndDelete({ _id: eventoId });
-        if(!eventoDeleted) return res.status(400).send({message: 'Evento not deleted'});
+        const checkHotelEvent = await Event.findOne({ _id: eventId, hotel: hotelId }).populate('hotel').lean()
+        if (checkHotelEvent == null || checkHotelEvent.hotel._id != hotelId) return res.status(400).send({ message: 'You cant delete this event' })
+
+        const eventoDeleted = await Event.findOneAndDelete({ _id: eventId });
+        if(!eventoDeleted) return res.status(400).send({message: 'Evento not found or alredy removed'});
         return res.send({ message: 'Evento deleted successfully', eventoDeleted });
     }catch(err){
         console.log(err);
@@ -80,25 +99,62 @@ exports.deleteEvento = async(req, res)=>{
     }
 }
 
-exports.getEventos = async(req, res)=>{
-    try{
-        const eventos = await Evento.find();
-        return res.send ({eventos});
-    }catch(err){
+exports.getEvents = async (req, res) => {
+    try {
+        const hotelId = req.params.idHotel;
+        const userId = req.user.sub;
+
+        const checkUserHotel = await Hotel.findOne({ _id: hotelId }).lean()
+        if (checkUserHotel == null || checkUserHotel.adminHotel != userId) {
+            return res.status(404).send({ message: 'You can not see the events of this hotel' });
+        } else {
+            const events = await Event.find({ hotel: hotelId }).lean().populate('hotel');
+            if (!events) {
+                return res.staus(400).send({ message: 'Events not found' });
+            } else {
+                return res.send({ messsage: 'Events found:', events });
+            }
+        }
+    } catch (err) {
         console.log(err);
-        return res.status(500).send({err, message: 'Error of get eventos'});
+        return res.status(500).send({ message: 'Error getting the events' });
     }
 }
 
-exports.getEvento = async(req, res)=>{
-    try{
-        const eventoId = req.params.id;
-        const evento = await Evento.findOne({_id: eventoId});
-        if(!evento) return res.send({message: 'Evento not found'});
-        return res.send({evento});
-    }catch(err){
+exports.getEvent = async (req, res) => {
+    try {
+        const hotelId = req.params.idHotel;
+        const userId = req.user.sub;
+        const eventId = req.params.id;
+        const checkUserHotel = await Hotel.findOne({ _id: hotelId }).lean()
+        if (checkUserHotel == null || checkUserHotel.adminHotel != userId) {
+            return res.status(404).send({ message: 'You cannot see the events of this hotel' });
+        } else {
+            const checkEventHotel = await Event.findOne({ _id: eventId, hotel: hotelId }).populate('hotel').lean();
+            if (checkEventHotel == null || checkEventHotel.hotel._id != hotelId) {
+                return res.status(404).send({ message: 'You cant see this event' });
+            } else {
+                return res.send({ message: 'Event found:', checkEventHotel });
+            }
+        }
+    } catch (err) {
         console.log(err);
-        return res.status(500).send({err, message: 'Error of get evento'});
+        return res.status(500).send({ message: 'Error getting event' });
+    }
+}
+
+
+exports.getEventsByHotel = async (req, res) => {
+    try {
+        const hotelId = req.params.id;
+        const hotelExist = await Hotel.findOne({_id: hotelId});
+        if(!hotelExist) return res.send({ message: 'Hotel not found' });
+        const events = await Event.find({ hotel: hotelId }).lean();
+        if (!events) return res.staus(400).send({ message: 'Events not found' });
+            return res.send({ hotel: hotelExist.name, events: events });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'error getting events' });
     }
 }
 

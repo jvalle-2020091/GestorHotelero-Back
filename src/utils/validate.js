@@ -158,3 +158,15 @@ exports.checkUpdateService = async(service)=>{
           return true;
       }
 }
+
+//------------------------Event--------------------------------------------------------
+
+
+exports.checkUpdateEvent = async(event)=>{
+    if( event.hotel ||
+        Object.entries(event).length === 0){
+          return false;
+      }else{
+          return true;
+      }
+}
