@@ -24,8 +24,8 @@ api.post('/uploadImage/:id', [mdAuth.ensureAuth, upload], hotelController.upload
 api.get('/getImage/:fileName', upload, hotelController.getImage);
 
 //Funciones publicas
-api.get('/getHotels', mdAuth.ensureAuth,hotelController.getHotels);
-api.get('/getHotel/:id', mdAuth.ensureAuth,hotelController.getHotel);
+api.get('/getHotels',  hotelController.getHotels);
+api.get('/getHotel/:id', mdAuth.ensureAuth, hotelController.getHotel);
 api.post('/searchHotel', mdAuth.ensureAuth, hotelController.searchHotel);
 
 module.exports = api;

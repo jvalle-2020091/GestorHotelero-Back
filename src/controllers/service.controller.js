@@ -26,8 +26,8 @@ exports.addService = async (req, res) => {
             }else{
                 if(checkHotel.adminHotel != userId) return  res.status(400).send({ message: 'This hotel does not belong to you'});
 
-                const checkService = await Service.findOne({ name: data.name }).lean()
-                if (checkService != null) return res.status(400).send({ message: 'An event with the same name already exists' });
+                 const checkService = await Service.findOne({ name: data.name, hotel: hotelId}).lean()
+                if (checkService != null) return res.status(400).send({ message: 'An service with the same name already exists' }); 
 
                 const service = new Service(data);
                 await service.save();

@@ -163,7 +163,7 @@ exports.deleteHotel = async(req, res)=>{
 exports.getHotels = async(req, res)=>{
     try{
         const hotels = await Hotel.find();
-        return res.send(hotels);
+        return res.send({message: 'Hotels:', hotels})
     }catch(err){
         console.log(err);
         return res.status(500).send({err, message: 'Error of get hotels'});
