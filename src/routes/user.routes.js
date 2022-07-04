@@ -24,8 +24,8 @@ api.get('/myProfile', mdAuth.ensureAuth, userController.myProfile);
 api.post('/saveUser', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.saveUser);
 api.put('/updateUser/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.updateUser);
 api.delete('/deleteUser/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.deleteUser);
-api.get('/getUsers', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.getUsers);
-api.get('/getUser/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], userController.getUser);
+api.get('/getUsers', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.getUsers);
+api.get('/getUser/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.getUser);
 
 //FUNCIONES PRIVADAS
 //ADMIN-APP

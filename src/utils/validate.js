@@ -165,8 +165,8 @@ exports.checkUpdateService = async(service)=>{
 
 
 exports.checkUpdateEvent = async(event)=>{
-    if( event.hotel ||
-        Object.entries(event).length === 0){
+    if( 
+        Object.entries(event).length === 0 || event.hotel ){
           return false;
       }else{
           return true;

@@ -28,4 +28,6 @@ api.get('/getHotels',  hotelController.getHotels);
 api.get('/getHotel/:id', mdAuth.ensureAuth, hotelController.getHotel);
 api.post('/searchHotel', mdAuth.ensureAuth, hotelController.searchHotel);
 
+api.get('/myHotel',  [mdAuth.ensureAuth, mdAuth.isAdmin], hotelController.myHotel)
+
 module.exports = api;

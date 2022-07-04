@@ -136,7 +136,7 @@ exports.myProfile = async (req, res) => {
         delete user.history;
         delete user.invoice;
         delete user.password;
-        delete user.role;
+        
         delete user.__v
         if (!user) {
             return res.send({ message: 'The entered user could not be found' })
@@ -284,7 +284,7 @@ exports.updateAdminHotel = async (req, res) => {
         if (emptyParams === false) return res.status(400).send({ message: 'Empty params or params not update' });
         const alreadyUsername = await User.findOne({ _id: userId, username: params.username });
         if (alreadyUsername && userExist.username != alreadyUsername.username) return res.send({ message: 'Username already taken' });
-        if (params.role != 'CLIENT') return res.status(400).send({ message: 'Invalid role' });
+        if (params.role != 'CLIENT' && params.role != 'ADMIN-HOTEL' ) return res.status(400).send({ message: 'Invalid role' });
         const userUpdate = await User.findOneAndUpdate({ _id: userId }, params, { new: true });
         if (!userUpdate) return res.status(400).send({ message: 'User not updated' });
         return res.send({ message: 'User updated successfully', userUpdate});
@@ -330,7 +330,7 @@ exports.getAdminHotel = async (req, res) => {
 
 exports.getAdminsHotel = async (req, res) => {
     try {
-        const usersExist = await User.find();
+        const usersExist = await User.find(role === 'ADMIN-HOTEL');
         return res.send({message: 'Users:', usersExist})
     } catch (err) {
         console.log(err)
