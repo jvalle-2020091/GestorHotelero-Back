@@ -3,6 +3,8 @@
 const User = require('../models/user.model');
 const validate = require('../utils/validate');
 const jwt = require('../services/jwt');
+const fs = require('fs');
+const path = require('path');
 
 //FUNCIONES PÚBLICAS
 
@@ -52,6 +54,9 @@ exports.login = async (req, res) => {
         if (already && await validate.checkPassword(data.password, already.password)) {
             let token = await jwt.createToken(already);
             delete already.password;
+            delete already.invoice;
+            delete already.history;
+            delete already.reservations;
 
             return res.send({ token, message: 'Login successfuly', already });
         } else return res.status(401).send({ message: 'Invalid credentials' });
@@ -332,3 +337,62 @@ exports.getAdminsHotel = async (req, res) => {
         return res.status(500).send({ message: 'Error getting users' });
     }
 };
+
+exports.uploadImage = async (req, res) => {
+    try {
+        const alreadyImage = await User.findOne({ _id: req.user.sub });
+        let pathFile = './uploads/users/';
+
+        if (alreadyImage.image) {
+            fs.unlinkSync(pathFile + alreadyImage.image);
+        }
+
+        if (!req.files.image || !req.files.image.type) {
+            return res.status(400).send({ message: 'An image has not been sent' });
+        } else {
+            //ruta en la que llega la imagen
+            const filePath = req.files.image.path; // \uploads\users\file_name.ext
+
+            //separar en jerarquía la ruta de la imágen (linux o MAC: ('\'))
+            const fileSplit = filePath.split('\\');// fileSplit = ['uploads', 'users', 'file_name.ext']
+            const fileName = fileSplit[2];// fileName = file_name.ext
+
+            const extension = fileName.split('\.'); // extension = ['file_name', 'ext']
+            const fileExt = extension[1]; // fileExt = ext;
+
+            const validExt = await validate.validExtension(fileExt, filePath);
+
+            if (validExt === false) {
+                return res.status(400).send({ message: 'invalid extension' });
+            } else {
+                const updateUser = await User.findOneAndUpdate({ _id: req.user.sub }, { image: fileName }, { new: true });
+                if (!updateUser) {
+                    return res.status(404).send({ message: 'User not found' });
+                } else {
+                    delete updateUser.password;
+                    return res.status(200).send({ message: 'added image', updateUser });
+                }
+            }
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'Error upload image' });
+    }
+}
+
+exports.getImage = async (req, res) => {
+    try {
+        const fileName = req.params.fileName;
+        const pathFile = './uploads/users/' + fileName;
+
+        const image = fs.existsSync(pathFile);
+        if (!image) {
+            return res.status(404).send({ message: 'Image not found' });
+        } else {
+            return res.sendFile(path.resolve(pathFile));
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'Error getting image' });
+    }
+}
