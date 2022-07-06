@@ -88,9 +88,9 @@ exports.saveHotel = async (req, res) => {
             name: params.name,
             address: params.address,
             phone: params.phone,
-            timesRequest: 0,
+         
         };
-        const msg = validateData(data);
+        let msg = validateData(data);
         if (!msg) {
             let hotelExist = await alreadyHotel(data.name);
             if (hotelExist) return res.status(400).send({ message: 'This hotel already exists' });
@@ -99,14 +99,6 @@ exports.saveHotel = async (req, res) => {
             const checkAdmin = await User.findOne({ _id: data.adminHotel });
             if (checkAdmin === null || checkAdmin._id != data.adminHotel)
                 return res.send({ message: 'User not exists' })
-            console.log(checkAdmin);
-            /* const hotelAlready = await Hotel.findOne({ 
-                 $and: [
-                     {name: data.name},
-                     {adminHotel: data.adminHotel}
-                 ]
-             });
-             if(hotelAlready)return res.send({message: 'This hotel already existed'}); */
             const hotel = new Hotel(data);
             await hotel.save();
             return res.send({ message: 'Hotel saved successfully' })
@@ -162,8 +154,8 @@ exports.deleteHotel = async (req, res) => {
 exports.myHotel = async (req, res) => {
     try {
         const userId = req.user.sub;
+        if (!userId) return res.send({ message: 'Creé un hotel' })
         const hotel = await Hotel.findOne({ adminHotel: userId }).lean().populate('adminHotel')
-        delete hotel.__v
         if (!hotel) {
             return res.send({ message: 'The entered user could not be found' })
         } else {

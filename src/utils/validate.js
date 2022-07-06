@@ -11,7 +11,7 @@ exports.validateData = (data) =>{
 
     for(let key of keys){
         if(data[key] !== null && data[key] !== undefined && data[key] !== '') continue;
-        msg += `The params ${key} es obligatorio\n`
+        msg += ` ${key} is required\n`
     }
     return msg.trim();
 }
@@ -58,7 +58,7 @@ exports.checkPermission = async (userId, sub)=>{
 
 exports.checkUpdate =  async(user)=>{
     try{
-        if(user.password || Object.entries(user).length === 0 || user.role)
+        if(user.password || Object.entries(user).length === 0  || user.reservations || user.history || user.invoice )
         return false;
         else 
         return true;

@@ -15,6 +15,7 @@ exports.test = (req, res) => {
 // -------------- agregar reservaciones ---------------
 exports.addReservation = async (req, res) => {
     try {
+        const user = req.user.sub;
         const params = req.body;
         const hotelId = req.params.id;
         const data = {
@@ -22,6 +23,8 @@ exports.addReservation = async (req, res) => {
             service: params.service,
             startDate: params.startDate,
             endDate: params.endDate,
+            user: params.user,
+            totalPrice: 0
         }
 
         let msg = Validate.validateData(data);

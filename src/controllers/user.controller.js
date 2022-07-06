@@ -78,6 +78,7 @@ exports.update = async (req, res) => {
         if (user) {
             const checkUpdated = await validate.checkUpdate(params);
             if (checkUpdated === false) {
+                console.log(checkUpdated)
                 return res.status(400).send({ message: 'Parámetros no válidos para actualizar' })
             } else {
                 const checkRole = await User.findOne({ _id: userId })
@@ -111,7 +112,7 @@ exports.delete = async (req, res) => {
         const userId = req.user.sub;
 
         const checkRole = await User.findOne({ _id: userId })
-        if (checkRole.role === 'ADMIN-HOTEL' && checkRole.role === 'ADMIN-HOTEL') {
+        if (checkRole.role === 'ADMIN-HOTEL' && checkRole.role === 'ADMIN-APP') {
             return res.status(403).send({ message: 'No puede eliminar usuarios de rol ADMIN' });
         } else {
             // await rooms.deleteMany({ user: userId })

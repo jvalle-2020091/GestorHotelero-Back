@@ -66,21 +66,21 @@ exports.saveRoom = async(req, res)=>{
         const hotel = req.params.id;
         const userId = req.user.sub;
         const params = req.body;
-        const data = {
+        let data = {
             name: params.name,
             description: params.description,
             price: params.price,
             available: true,
             dateAvalable: params.dateAvalable,
             hotel: req.params.id,
-        };
-        const msg = validateData(data);
+        }
+        let msg = validateData(data);
         if(!msg){
-            let hotelExist = await Hotel.findOne({ _id: hotel})
+            const hotelExist = await Hotel.findOne({ _id: hotel})
             if(!hotelExist) return res.status(400).send({message: 'This hotel does not exist'});
             if(hotelExist.adminHotel != userId) return res.send({ message: 'This hotel does not belong to you'});
 
-            const checkRoom = await Room.findOne({ name: data.name }).lean()
+            const checkRoom = await Room.findOne({ name: data.name , hotel: hotel}).lean()
             if (checkRoom != null) return res.status(400).send({ message: 'An room with the same name already exists' });
 
             const room = new Room(data);
