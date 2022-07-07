@@ -126,7 +126,7 @@ exports.updateHotel = async (req, res) => {
 
         const updateHotel = await Hotel.findOneAndUpdate({ _id: hotelId }, params, { new: true });
         if (!updateHotel) return res.send({ message: 'Hotel not updated' });
-        return res.send({ message: 'Update Hotel', updateHotel });
+        return res.send({ message: 'Update Hotel successfully', updateHotel });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ err, message: 'Error updating hotel' });

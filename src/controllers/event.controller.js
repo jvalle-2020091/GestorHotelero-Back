@@ -31,7 +31,7 @@ exports.addEvent = async (req, res) => {
             if (checkHotel === null || checkHotel.id != hotel) return res.status(400).send({ message: 'You cannot add evento to this evento' });
                 if(checkHotel.adminHotel != userId) return  res.status(400).send({ message: 'This hotel does not belong to you'});
 
-                const checkEvent = await Event.findOne({ name: data.name }).lean()
+                const checkEvent = await Event.findOne({ name: data.name, hotel: hotel}).lean()
                 if (checkEvent != null) return res.status(400).send({ message: 'An event with the same name already exists' });
 
                 const event = new Event(data);
@@ -101,23 +101,16 @@ exports.deleteEvent = async(req, res)=>{
 
 exports.getEvents = async (req, res) => {
     try {
-        const hotelId = req.params.idHotel;
-        const userId = req.user.sub;
-
-        const checkUserHotel = await Hotel.findOne({ _id: hotelId }).lean()
-        if (checkUserHotel == null || checkUserHotel.adminHotel != userId) {
-            return res.status(404).send({ message: 'You can not see the events of this hotel' });
-        } else {
-            const events = await Event.find({ hotel: hotelId }).lean().populate('hotel');
-            if (!events) {
-                return res.staus(400).send({ message: 'Events not found' });
-            } else {
-                return res.send({ messsage: 'Events found:', events });
-            }
-        }
+        const hotelId = req.params.id;
+        const hotelExist = await Hotel.findOne({_id: hotelId});
+        console.log(hotelExist);
+        if(!hotelExist) return res.send({ message: 'Hotel not found' });
+        const events = await Event.find({ hotel: hotelId }).lean();
+        if (!events) return res.staus(400).send({ message: 'Events not found' });
+            return res.send({ hotel: hotelExist.name, events: events });
     } catch (err) {
         console.log(err);
-        return res.status(500).send({ message: 'Error getting the events' });
+        return res.status(500).send({ message: 'error getting events' });
     }
 }
 

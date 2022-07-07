@@ -11,6 +11,6 @@ api.post('/addEvent/:id', [mdAuth.ensureAuth, mdAuth.isAdmin], EventoController.
 api.put('/updateEvent/:idHotel/:id',[mdAuth.ensureAuth, mdAuth.isAdmin],  EventoController.updateEvent);
 api.delete('/deleteEvent/:idHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdmin],  EventoController.deleteEvent);
 api.get('/getEvent/:idHotel/:id', mdAuth.ensureAuth,EventoController.getEvent);
-api.get('/getEvents/:idHotel',mdAuth.ensureAuth, EventoController.getEvents);
+api.get('/getEvents/:id',mdAuth.ensureAuth, EventoController.getEvents);
 
 module.exports = api;
