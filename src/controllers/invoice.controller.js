@@ -49,7 +49,7 @@ exports.getInvoice = async (req, res) => {
         const invoice = await Invoice.findOne({ _id: invoiceId }).lean()
         .populate('reservations')
         .populate('reservations.room.name')
-        if (!invoice) return res.send({ message: 'Hotel not found' });
+        if (!invoice) return res.send({ message: 'Invoice not found' });
         return res.send({ invoice });
     } catch (err) {
         console.log(err);
