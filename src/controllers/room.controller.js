@@ -168,7 +168,7 @@ exports.getRoomsAvailable = async(req,res)=>{
         const userId = req.user.sub;
         const hotelExist = await Hotel.findOne({_id: hotelId});
         if (!hotelExist)  return res.status(404).send({message: 'Hotel not found' });
-        if (hotelExist.adminHotel != userId) return res.status(401).send({message:'This hotel does not belong to you'});
+
         const rooms = await Room.find({hotel: hotelId, available: true}).lean()
         if (!rooms) return res.status(400).send({message: 'Rooms not found'});
                     return res.send({message: 'Rooms found:', rooms});  

@@ -6,6 +6,9 @@ const port = 3200;
 const {  encrypt } = require('./src/utils/validate');
 const User = require('./src/models/user.model');
 
+const fs = require('fs')
+const path = require('path')
+
 mongo.init();
 app.listen(port, async () => {
     console.log(`Conectado al puerto ${port}`)

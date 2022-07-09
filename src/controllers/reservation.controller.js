@@ -36,27 +36,28 @@ exports.addReservation = async (req, res) => {
         //Verificar que la habitación si existe y esta disponible
         const checkRoom = await Room.findOne({ _id: data.room})
         if (!checkRoom)
-            return res.status(400).send({ message: 'Habitación no Encontrada.' });
+            return res.status(400).send({ message: 'Room not found' });
         if (checkRoom.available == false)
-            return res.status(400).send({ message: 'Habitación no Disponible.' });
+            return res.status(400).send({ message: 'Room not Available.' });
 
         //Verificar que exista el servicio
         const checkService = await Service.findOne({ _id: data.service })
         if (!checkService)
-            return res.status(400).send({ message: 'Servicio no Encontrado.' });
+            return res.status(400).send({ message: 'Service not found' });
 
-        //Actualizar el estado de las habitaciones
-        var updateAvailability = await Room.findOneAndUpdate({ _id: data.room }, { available: false }, { new: true });
+        //Actualizar la disponibilidad de las habitaciones
+        var updateAvailable = await Room.findOneAndUpdate({ _id: data.room }, { available: false }, { new: true });
         
         //Calcular el precio total de la reservación
         const reservation = {
             totalPrice: checkService.price + checkRoom.price,
         }
         data.totalPrice = reservation.totalPrice;
+        
 
         const reservacion = new Reservation(data);
         await reservacion.save();
-        return res.send({ message: 'Reservación creada Exitosamente.', reservacion });
+        return res.send({ message: 'Reservation created successfully', reservacion });
 
     } catch (err) {
         console.log(err);
