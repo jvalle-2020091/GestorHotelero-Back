@@ -27,7 +27,7 @@ exports.getRooms = async (req, res) => {
         } else {
             const rooms = await Room.find({ hotel: hotelId }).lean().populate('hotel');
             if (!rooms) {
-                return res.staus(400).send({ message: 'Rooms not found' });
+                return res.status(400).send({ message: 'Rooms not found' });
             } else {
                 return res.send({ messsage: 'Rooms found:', rooms });
             }
@@ -153,7 +153,7 @@ exports.getRoomsByHotel = async (req, res) => {
         if(!hotelExist) return res.send({ message: 'Hotel not found' });
         const rooms = await Room.find({hotel: hotelId})
             .lean(); 
-            if(!rooms) return res.staus(400).send({ message: 'Rooms not found' });
+            if(!rooms) return res.status(400).send({ message: 'Rooms not found' });
             return res.send({hotel: hotelExist.name, rooms: rooms});
     } catch (err) {
         console.log(err);

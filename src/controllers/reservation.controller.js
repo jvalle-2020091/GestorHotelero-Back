@@ -64,3 +64,67 @@ exports.addReservation = async (req, res) => {
         return res.status(500).send({ err, message: 'Error saving Reservation in Hotel' });
     }
 }
+
+exports.getReservations = async (req, res) => {
+    try {
+        const hotelId = req.params.idHotel;
+        const userId = req.user.sub;
+        const reservations = await Reservation.find({ hotel: hotelId})
+        .lean()
+        .populate('room')
+        .populate('service')
+        if (!reservations) return res.status(400).send({message: 'Reservations not found'});
+                    return res.send({message: 'Reservations found:', reservations});  
+    } catch (err) {
+        console.log(err); 
+        return res.status(500).send({err, message: 'Error getting reservations by user'})
+    }
+}
+
+exports.getReservation = async (req, res) => {
+    try {
+        const hotelId = req.params.idHotel;
+        const userId = req.user.sub;
+        const reservationId = req.params.id;
+        const checkUserHotel = await Hotel.findOne({_id: hotelId }).lean()
+        if (checkUserHotel == null ) {
+            return res.status(404).send({ message: 'You cannot see the reservation of this hotel' });
+        } else {
+            const checkReservationHotel = await Reservation.findOne({ _id: reservationId, user: userId})
+            .populate('room')
+            .populate('service')
+            .populate('user')
+            .lean()
+            if (checkReservationHotel == null || checkReservationHotel.hotel._id != hotelId) {
+                return res.status(404).send({ message: 'You cant see this room' });
+            } else {
+                return res.send({ message: 'Reservation found:', checkReservationHotel });
+            }
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'Error getting room' });
+    }
+}
+
+exports.myReservations = async (req, res) => {
+    try {
+        const hotelId = req.params.idHotel;
+        const userId = req.user.sub;
+        const checkUserHotel = await Hotel.findOne({ _id: hotelId }).lean()
+        if (checkUserHotel == null ) 
+            return res.status(404).send({ message: 'Hotel dont exist' });
+            const reservations = await Reservation.find({ hotel: hotelId, user: userId})
+            .lean()
+            .populate('room')
+            .populate('service')
+            if (!reservations) 
+                return res.status(400).send({ message: 'Reservations not found' });
+                return res.send({ messsage: 'Reservations found:', reservations });
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Error getting My Reservatiosn'})
+        
+    }
+}

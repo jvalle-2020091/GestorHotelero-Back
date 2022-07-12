@@ -172,3 +172,13 @@ exports.checkUpdateEvent = async(event)=>{
           return true;
       }
 }
+
+//-----------------------------Invoice------------------------------
+exports.alreadyInvoice = async ( reservations)=>{
+    try{
+     let exist = Invoice.findOne({  reservations:reservations }).lean()
+     return exist;
+    }catch(err){
+        return err;
+    }
+}

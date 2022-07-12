@@ -168,7 +168,7 @@ exports.saveUser = async (req, res) => {
         const userExist = await validate.alreadyUser(params.username);
         if (userExist) return res.send({ message: 'Username already in use' });
         if (params.role != 'CLIENT' ) return res.status(400).send({ message: 'Invalid role' });
-        data.phone = params.phoNe;
+        data.phone = params.phone;
         data.password = await validate.encrypt(params.password);
 
         const user = new User(data);

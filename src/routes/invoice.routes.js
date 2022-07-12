@@ -9,7 +9,7 @@ const upload = connectMultiparty({ uploadDir: './pdfs'});
 
 
 api.get('/test', invoiceController.test);
-api.get('/getInvoice/:id', invoiceController.getInvoice);
+api.get('/getInvoice/:idReser', invoiceController.getInvoice);
 api.post('/addInvoice/:id', invoiceController.addInvoice);
 
 
