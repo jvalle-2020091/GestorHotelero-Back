@@ -2,6 +2,7 @@
 
 const User = require('../models/user.model');
 const Hotel = require('../models/hotel.model');
+const Invoice = require('../models/invoice.model')
 const bcrypt = require('bcrypt-nodejs');
 const fs = require('fs');
 const { crossOriginResourcePolicy } = require('helmet');

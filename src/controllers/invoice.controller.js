@@ -24,16 +24,12 @@ exports.addInvoice = async (req, res) => {
         if (params.NIT == '' || params.NIT == undefined || params.NIT == null) {
             data.NIT = 'C/F'
         }
-
-
-    
         const msg = validate.validateData(data);
         if (msg) return res.status(400).send(msg);
 
-        //Verificar que no exista ya uno factura en esa reservación
-        let invoiceExist = await Invoice.findOne({_id: data.reservations});
-        console.log(invoiceExist);
-        if(invoiceExist === reservation ) return res.send({ message: 'Ya tiene factura'});
+        //Verificar que no exista ya una factura en esa reservación
+        let invoiceExist = await validate.alreadyInvoice(data.reservations);
+            if (invoiceExist) return res.status(400).send({ message: 'This reservation already has an invoice' });
 
         //Verificar que exista la reservacion
         const checkReservation = await Reservation.findOne({ _id: reservation });

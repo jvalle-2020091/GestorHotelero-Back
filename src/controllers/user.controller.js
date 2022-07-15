@@ -110,19 +110,13 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         const userId = req.user.sub;
-
         const checkRole = await User.findOne({ _id: userId })
-        if (checkRole.role === 'ADMIN-HOTEL' && checkRole.role === 'ADMIN-APP') {
+        console.log(checkRole);
+        if (checkRole.role === 'ADMIN-HOTEL' || checkRole.role == 'ADMIN-APP')
             return res.status(403).send({ message: 'No puede eliminar usuarios de rol ADMIN' });
-        } else {
-            // await rooms.deleteMany({ user: userId })
             const deleteUser = await User.findOneAndDelete({ _id: userId });
-            if (!deleteUser) {
-                return res.status(500).send({ message: 'Usuario no encontrado' })
-            } else {
+            if (!deleteUser)   return res.status(500).send({ message: 'Usuario no encontrado' })
                 return res.send({ message: 'Cuenta eliminada' })
-            }
-        }
     } catch (err) {
         console.log(err);
         return res.status(500).send({ message: 'Error eliminando el usuario' });
@@ -208,6 +202,8 @@ exports.deleteUser = async (req, res) => {
 
         const userExist = await User.findOne({ _id: userId });
         if (!userExist) return res.send({ message: 'User not found' });
+        if (userExist.role === 'ADMIN-HOTEL' || userExist.role === 'ADMIN-APP') 
+            return res.status(403).send({ message: 'No puede eliminar usuarios de rol ADMIN' });
         
         const userDeleted = await User.findOneAndDelete({ _id: userId });
         if (!userDeleted) return res.status(400).send({ message: 'User not deleted' });
@@ -261,7 +257,7 @@ exports.saveAdminHotel = async (req, res) => {
         if (msg) return res.status(400).send(msg);
         const userExist = await validate.alreadyUser(params.username);
         if (userExist) return res.send({ message: 'Username already in use' });
-        if (params.role != 'CLIENT' && params.role != 'ADMIN-HOTEL' ) return res.status(400).send({ message: 'Invalid role' });
+        if (params.role != 'CLIENT' || params.role != 'ADMIN-HOTEL' ) return res.status(400).send({ message: 'Invalid role' });
         data.phone = params.phone;
         data.password = await validate.encrypt(params.password);
 
@@ -302,6 +298,8 @@ exports.deleteAdminHotel = async (req, res) => {
 
         const userExist = await User.findOne({ _id: userId });
         if (!userExist) return res.send({ message: 'User not found' });
+        if (userExist.role === 'ADMIN-HOTEL' || userExist.role === 'ADMIN-APP') 
+            return res.status(403).send({ message: 'No puede eliminar usuarios de rol ADMIN' });
         
         const userDeleted = await User.findOneAndDelete({ _id: userId });
         if (!userDeleted) return res.status(400).send({ message: 'User not deleted' });
@@ -331,7 +329,7 @@ exports.getAdminHotel = async (req, res) => {
 
 exports.getAdminsHotel = async (req, res) => {
     try {
-        const usersExist = await User.find(role === 'ADMIN-HOTEL');
+        const usersExist = await User.find({role: 'ADMIN-HOTEL'});
         return res.send({message: 'Users:', usersExist})
     } catch (err) {
         console.log(err)
@@ -343,13 +341,13 @@ exports.uploadImage = async (req, res) => {
     try {
         const alreadyImage = await User.findOne({ _id: req.user.sub });
         let pathFile = './uploads/users/';
-
         if (alreadyImage.image) {
             fs.unlinkSync(pathFile + alreadyImage.image);
         }
 
+
         if (!req.files.image || !req.files.image.type) {
-            return res.status(400).send({ message: 'An image has not been sent' });
+            return res.status(400).send({ message: 'No se ha enviado una imagen' });
         } else {
             //ruta en la que llega la imagen
             const filePath = req.files.image.path; // \uploads\users\file_name.ext
@@ -364,20 +362,20 @@ exports.uploadImage = async (req, res) => {
             const validExt = await validate.validExtension(fileExt, filePath);
 
             if (validExt === false) {
-                return res.status(400).send({ message: 'invalid extension' });
+                return res.status(400).send({ message: 'Extensión inválida' });
             } else {
                 const updateUser = await User.findOneAndUpdate({ _id: req.user.sub }, { image: fileName }, { new: true });
                 if (!updateUser) {
-                    return res.status(404).send({ message: 'User not found' });
+                    return res.status(404).send({ message: 'Usuario no encontrado' });
                 } else {
                     delete updateUser.password;
-                    return res.status(200).send({ message: 'added image', updateUser });
+                    return res.status(200).send({ message: 'Imagen añadida', updateUser });
                 }
             }
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).send({ message: 'Error upload image' });
+        return res.status(500).send({ message: 'Error subiendo imagen' });
     }
 }
 
@@ -388,12 +386,12 @@ exports.getImage = async (req, res) => {
 
         const image = fs.existsSync(pathFile);
         if (!image) {
-            return res.status(404).send({ message: 'Image not found' });
+            return res.status(404).send({ message: 'Imagen no encontrada' });
         } else {
             return res.sendFile(path.resolve(pathFile));
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).send({ message: 'Error getting image' });
+        return res.status(500).send({ message: 'Error obteniendo la imagen' });
     }
 }

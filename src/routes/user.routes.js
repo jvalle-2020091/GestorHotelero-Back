@@ -4,8 +4,9 @@ const express = require('express');
 const userController = require('../controllers/user.controller');
 const api = express.Router();
 const mdAuth = require('../services/authenticated');
+
 const connectMultiparty = require('connect-multiparty');
-const upload = connectMultiparty({ uploadDir: './uploads/users'});
+const upload = connectMultiparty({ uploadDir: './uploads/users' });
 
 //FUNCIÓN PÚBLICA
 api.get('/test', userController.test);
@@ -35,9 +36,11 @@ api.delete('/deleteUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userC
 api.get('/getUsersHotel', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.getAdminsHotel);
 api.get('/getUserHotel/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.getAdminHotel);
 
-api.post('/uploadImage/:id', [mdAuth.ensureAuth, upload], userController.uploadImage);
+api.post('/uploadImage', [mdAuth.ensureAuth, upload], userController.uploadImage);
+
 api.get('/getImage/:fileName', upload, userController.getImage);
 
+api.get('/getAdminsHotel', [mdAuth.ensureAuth, mdAuth.isAdminAPP], userController.getAdminsHotel);
 
 
 module.exports = api; 

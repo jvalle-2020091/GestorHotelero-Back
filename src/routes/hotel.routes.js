@@ -20,8 +20,8 @@ api.put('/updateHotelByAdmin/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], hotel
 api.delete('/deleteHotelByAdmin/:id', [mdAuth.ensureAuth, mdAuth.isAdminAPP], hotelController.deleteHotelByAdmin);
 
 //Carga de imagenes
-api.post('/uploadImage/:id', [mdAuth.ensureAuth, upload], hotelController.uploadImage);
-api.get('/getImage/:fileName', upload, hotelController.getImage);
+api.post('/uploadImage/:id', [mdAuth.ensureAuth, upload], hotelController.uploadImageHotel);
+api.get('/getImage/:fileName', upload, hotelController.getImageHotel);
 
 //Funciones publicas
 api.get('/getHotels',  hotelController.getHotels);
