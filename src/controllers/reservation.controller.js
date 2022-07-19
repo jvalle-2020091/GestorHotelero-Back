@@ -178,7 +178,7 @@ exports.getReservation = async (req, res) => {
     }
 }
 
-exports.myReservations = async (req, res) => {
+exports.myReservationsByHotel = async (req, res) => {
     try {
         const hotelId = req.params.idHotel;
         const userId = req.user.sub;
@@ -186,6 +186,32 @@ exports.myReservations = async (req, res) => {
         if (checkUserHotel == null)
             return res.status(404).send({ message: 'Hotel dont exist' });
         const reservations = await Reservation.find({ hotel: hotelId, user: userId })
+            .lean()
+            .populate('room')
+            .populate('service')
+        if (!reservations)
+            return res.status(400).send({ message: 'Reservations not found' });
+            for (let i = 0; i < reservations.length; i++) {
+                delete reservations[i].user.password
+                delete reservations[i].user.role
+    
+                reservations[i].startDate = new Date(reservations[i].startDate).toISOString().split("T")[0];
+                reservations[i].endDate = new Date(reservations[i].endDate).toISOString().split("T")[0];
+            }
+            
+        return res.send({ messsage: 'Reservations found:', reservations });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: 'Error getting My Reservatiosn' })
+
+    }
+}
+
+exports.myReservations = async (req, res) => {
+    try {
+        const userId = req.user.sub;
+        const reservations = await Reservation.find({user: userId })
             .lean()
             .populate('room')
             .populate('service')

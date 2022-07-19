@@ -272,3 +272,31 @@ exports.getImageHotel = async (req, res) => {
         return res.status(500).send({ message: 'Error obteniendo la imagen' });
     }
 }
+
+exports.getHotelsHistory = async (req, res) => {
+    try {
+        const historyHotels = await User.findOne({ _id: req.user.sub }).populate('history').lean()
+        if (!historyHotels) {
+            return res.status(400).send({ message: 'Hotels not found' });
+        } else {
+            return res.send({ messsage: 'Hotels found:', hotels: historyHotels.history });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'Error getting this hotels' });
+    }
+}
+
+exports.getHotelsByPopularity = async (req, res) => {
+    try {
+        const hotels = await Hotel.find().sort({ timesRequest: -1 }).populate('adminHotel')
+        if (!hotels) {
+            return res.status(400).send({ message: 'Hotels not found' });
+        } else {
+            return res.send({ messsage: 'Hotels found:', hotels });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'Error getting this hotels' });
+    }
+}

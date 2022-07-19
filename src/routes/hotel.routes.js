@@ -28,6 +28,8 @@ api.get('/getHotels',  hotelController.getHotels);
 api.get('/getHotel/:id', mdAuth.ensureAuth, hotelController.getHotel);
 api.post('/searchHotel', mdAuth.ensureAuth, hotelController.searchHotel);
 
-api.get('/myHotel',  [mdAuth.ensureAuth, mdAuth.isAdmin], hotelController.myHotel)
+api.get('/myHotel',  [mdAuth.ensureAuth, mdAuth.isAdmin], hotelController.myHotel);
+api.get('/getHotelsHistory', mdAuth.ensureAuth, hotelController.getHotelsHistory);
+api.get('/getHotelsByPopularity', [mdAuth.ensureAuth, mdAuth.isAdminAPP], hotelController.getHotelsByPopularity);
 
 module.exports = api;
