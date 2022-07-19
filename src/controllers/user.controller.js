@@ -78,7 +78,6 @@ exports.update = async (req, res) => {
         if (user) {
             const checkUpdated = await validate.checkUpdate(params);
             if (checkUpdated === false) {
-                console.log(checkUpdated)
                 return res.status(400).send({ message: 'Parámetros no válidos para actualizar' })
             } else {
                 const checkRole = await User.findOne({ _id: userId })
@@ -111,7 +110,6 @@ exports.delete = async (req, res) => {
     try {
         const userId = req.user.sub;
         const checkRole = await User.findOne({ _id: userId })
-        console.log(checkRole);
         if (checkRole.role === 'ADMIN-HOTEL' || checkRole.role == 'ADMIN-APP')
             return res.status(403).send({ message: 'No puede eliminar usuarios de rol ADMIN' });
             const deleteUser = await User.findOneAndDelete({ _id: userId });
@@ -219,7 +217,6 @@ exports.getUser = async (req, res) => {
         const userId = req.params.id;
 
         const user = await User.findOne({ _id: userId });
-        console.log(user)
         if (!user) {
             return res.send({ message: 'The entered user could not be found' })
         } else {
@@ -257,7 +254,7 @@ exports.saveAdminHotel = async (req, res) => {
         if (msg) return res.status(400).send(msg);
         const userExist = await validate.alreadyUser(params.username);
         if (userExist) return res.send({ message: 'Username already in use' });
-        if (params.role != 'CLIENT' || params.role != 'ADMIN-HOTEL' ) return res.status(400).send({ message: 'Invalid role' });
+        if (params.role != 'CLIENT' && params.role != 'ADMIN-HOTEL' ) return res.status(400).send({ message: 'Invalid role' });
         data.phone = params.phone;
         data.password = await validate.encrypt(params.password);
 
@@ -298,7 +295,7 @@ exports.deleteAdminHotel = async (req, res) => {
 
         const userExist = await User.findOne({ _id: userId });
         if (!userExist) return res.send({ message: 'User not found' });
-        if (userExist.role === 'ADMIN-HOTEL' || userExist.role === 'ADMIN-APP') 
+        if (userExist.role === 'ADMIN-HOTEL' && userExist.role === 'ADMIN-APP') 
             return res.status(403).send({ message: 'No puede eliminar usuarios de rol ADMIN' });
         
         const userDeleted = await User.findOneAndDelete({ _id: userId });
@@ -315,7 +312,6 @@ exports.getAdminHotel = async (req, res) => {
         const userId = req.params.id;
 
         const user = await User.findOne({ _id: userId });
-        console.log(user)
         if (!user) {
             return res.send({ message: 'The entered user could not be found' })
         } else {

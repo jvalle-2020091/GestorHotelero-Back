@@ -14,9 +14,10 @@ exports.addInvoice = async (req, res) => {
         const params = req.body;
         const reservation = req.params.id;
         const invoices = await Invoice.count().lean();
+        var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const date = new Date();
         const data = {
-            date: date.toISOString().split('T')[0],
+            date: date.toLocaleDateString('es-ES', options),
             serial: invoices + 1000,
             reservations: req.params.id,
             NIT: params.NIT,
@@ -32,14 +33,15 @@ exports.addInvoice = async (req, res) => {
             if (invoiceExist) return res.status(400).send({ message: 'This reservation already has an invoice' });
 
         //Verificar que exista la reservacion
-        const checkReservation = await Reservation.findOne({ _id: reservation });
+        const checkReservation = await Reservation.findOne({ _id: reservation }).populate('hotel').populate('room').populate('service');
         if (checkReservation === null || checkReservation.id != reservation)
             return res.status(400).send({ message: 'reservation not exist' });
 
         data.name = params.name;
+
         const invoice = new Invoice(data);
         await invoice.save();
-            return res.send({ message: 'Invoice created successfully', invoice });
+            return res.send({ message: 'Invoice created successfully', invoice, checkReservation });
 
     } catch (err) {
         console.log(err);
@@ -50,11 +52,18 @@ exports.addInvoice = async (req, res) => {
 exports.getInvoice = async (req, res) => {
     try {
         const reservation = req.params.idReser;
+        //Verificar que exista la reservacion
+        const checkReservation = await Reservation.findOne({ _id: reservation }).populate('hotel').populate('room').populate('service');
+        if (checkReservation === null || checkReservation.id != reservation)
+            return res.status(400).send({ message: 'reservation not exist' });
+
         const invoice = await Invoice.findOne({ reservations: reservation }).lean()
         .populate('reservations')
-        .populate('reservations.room.name')
+
+        invoice.reservations.startDate = new Date(invoice.reservations.startDate).toISOString().split("T")[0];
+        invoice.reservations.endDate = new Date(invoice.reservations.endDate).toISOString().split("T")[0];
         if (!invoice) return res.send({ message: 'Invoice not found' });
-        return res.send({message: 'Invoice Found', invoice });
+        return res.send({message: 'Invoice Found', invoice, checkReservation });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ err, message: 'Error of get hotel' });
